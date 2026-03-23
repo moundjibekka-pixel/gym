@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Training">
+<title>Training</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080808;--surface:#101010;--card:#161616;--card2:#1e1e1e;
+  --border:#1f1f1f;--border2:#2c2c2c;
+  --accent:#e8ff47;--orange:#ff6b35;--blue:#47c8ff;--green:#4ade80;--red:#ff4d4d;
+  --text:#f0f0f0;--muted:#555;--muted2:#888;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;display:flex;flex-direction:column;}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  display:flex;background:var(--surface);border-top:1px solid var(--border);
+  padding:8px 0 20px;flex-shrink:0;z-index:100;
+}
+.nav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:6px 4px;background:none;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;
+  letter-spacing:.5px;color:var(--muted);transition:color .15s;
+}
+.nav-btn.active{color:var(--accent);}
+.nav-icon{font-size:20px;line-height:1;}
+
+/* ── PAGES ── */
+.pages{flex:1;overflow:hidden;position:relative;}
+.page{position:absolute;inset:0;overflow-y:auto;display:none;padding:20px 16px 24px;}
+.page.active{display:block;}
+.page::-webkit-scrollbar{display:none;}
+
+/* ── TYPOGRAPHY ── */
+.bebas{font-family:'Bebas Neue',sans-serif;letter-spacing:1.5px;}
+.eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted2);}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:2px;line-height:1;margin:6px 0 20px;}
+.page-title span{color:var(--accent);}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:12px;}
+.card-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-header h3{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--muted2);}
+.card-body{padding:16px;}
+
+/* ── DASHBOARD ── */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px 14px;}
+.stat-box.highlight{border-color:rgba(232,255,71,.25);background:rgba(232,255,71,.04);}
+.stat-label{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:6px;}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:1px;line-height:1;color:var(--text);}
+.stat-box.highlight .stat-val{color:var(--accent);}
+.stat-sub{font-size:11px;color:var(--muted2);margin-top:3px;}
+
+.today-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:14px;}
+.today-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted2);margin-bottom:8px;}
+.today-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--accent);margin-bottom:4px;}
+.today-desc{font-size:12px;color:var(--muted2);line-height:1.5;}
+.today-btn{margin-top:12px;width:100%;padding:11px;background:var(--accent);border:none;border-radius:6px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:#000;cursor:pointer;transition:opacity .15s;}
+.today-btn:active{opacity:.8;}
+
+.recent-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted2);margin-bottom:10px;}
+.session-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.session-row:last-child{border-bottom:none;}
+.session-day{width:38px;height:38px;border-radius:6px;background:rgba(232,255,71,.08);border:1px solid rgba(232,255,71,.15);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--accent);flex-shrink:0;}
+.session-info{flex:1;}
+.session-name{font-size:13px;color:var(--text);font-weight:500;}
+.session-meta{font-size:11px;color:var(--muted2);margin-top:2px;}
+.session-check{font-size:18px;}
+
+/* Progress bars */
+.prog-row{margin-bottom:14px;}
+.prog-row:last-child{margin-bottom:0;}
+.prog-head{display:flex;justify-content:space-between;margin-bottom:6px;}
+.prog-name{font-size:12px;color:var(--muted2);}
+.prog-val{font-size:12px;color:var(--text);font-weight:500;}
+.prog-track{height:4px;background:var(--border2);border-radius:2px;}
+.prog-fill{height:100%;border-radius:2px;background:var(--accent);transition:width .5s ease;}
+
+/* ── WORKOUT PAGE ── */
+.phase-row{display:flex;gap:8px;margin-bottom:20px;}
+.phase-chip{padding:8px 18px;border-radius:20px;border:1px solid var(--border);background:var(--card);font-size:12px;font-weight:600;color:var(--muted2);cursor:pointer;transition:all .15s;letter-spacing:.5px;}
+.phase-chip.active-p1{background:rgba(232,255,71,.08);border-color:var(--accent);color:var(--accent);}
+.phase-chip.active-p2{background:rgba(255,107,53,.08);border-color:var(--orange);color:var(--orange);}
+
+.week-row{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;}
+.week-row::-webkit-scrollbar{display:none;}
+.week-chip{padding:6px 14px;border-radius:16px;border:1px solid var(--border);background:var(--card);font-size:11px;font-weight:500;color:var(--muted2);cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0;}
+.week-chip.active{background:rgba(232,255,71,.08);border-color:var(--accent);color:var(--accent);}
+
+.day-row{display:flex;gap:6px;margin-bottom:20px;overflow-x:auto;padding-bottom:4px;}
+.day-row::-webkit-scrollbar{display:none;}
+.day-chip{padding:8px 14px;border-radius:6px;border:1px solid var(--border);background:var(--card);font-size:12px;font-weight:600;color:var(--muted2);cursor:pointer;white-space:nowrap;letter-spacing:1px;flex-shrink:0;position:relative;transition:all .15s;}
+.day-chip.active{background:rgba(232,255,71,.06);border-color:rgba(232,255,71,.4);color:var(--accent);}
+.day-chip.done::after{content:'✓';position:absolute;top:-4px;right:-4px;width:14px;height:14px;background:var(--green);border-radius:50%;font-size:8px;display:flex;align-items:center;justify-content:center;color:#000;font-weight:700;}
+
+.week-note-box{background:rgba(232,255,71,.04);border:1px solid rgba(232,255,71,.12);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:var(--muted2);line-height:1.6;}
+.week-note-box strong{color:var(--accent);}
+
+.group-header{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);padding:10px 16px 8px;background:var(--card2);border-bottom:1px solid var(--border);}
+
+/* Exercise row */
+.ex-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);}
+.ex-row:last-child{border-bottom:none;}
+.ex-name{font-size:13px;color:var(--text);line-height:1.4;}
+.ex-sets{font-size:11px;color:var(--muted2);font-weight:500;white-space:nowrap;}
+.ex-note{font-size:11px;color:var(--muted);margin-top:2px;font-style:italic;}
+.log-btn{padding:6px 12px;background:var(--card2);border:1px solid var(--border2);border-radius:5px;color:var(--muted2);font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:'DM Sans',sans-serif;}
+.log-btn:active{background:rgba(232,255,71,.1);border-color:var(--accent);color:var(--accent);}
+.log-btn.logged{background:rgba(78,222,128,.08);border-color:rgba(78,222,128,.3);color:var(--green);}
+
+.finish-day-btn{width:100%;margin-top:16px;padding:14px;background:var(--accent);border:none;border-radius:8px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:#000;cursor:pointer;transition:opacity .15s;}
+.finish-day-btn:active{opacity:.8;}
+
+/* ── LOG MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:none;align-items:flex-end;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border-radius:16px 16px 0 0;padding:24px 20px 40px;width:100%;border-top:1px solid var(--border2);}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--text);margin-bottom:4px;}
+.modal-sub{font-size:12px;color:var(--muted2);margin-bottom:20px;}
+.modal-inputs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.input-group label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);display:block;margin-bottom:6px;}
+.input-group input{width:100%;background:var(--card2);border:1px solid var(--border2);border-radius:6px;padding:12px;color:var(--text);font-size:18px;font-weight:600;font-family:'DM Sans',sans-serif;text-align:center;}
+.input-group input:focus{outline:none;border-color:var(--accent);}
+.modal-note{width:100%;background:var(--card2);border:1px solid var(--border2);border-radius:6px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;margin-bottom:16px;resize:none;height:60px;}
+.modal-note:focus{outline:none;border-color:rgba(232,255,71,.3);}
+.modal-btns{display:grid;grid-template-columns:1fr 2fr;gap:10px;}
+.btn-cancel{padding:13px;background:var(--card2);border:1px solid var(--border2);border-radius:8px;color:var(--muted2);font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-save{padding:13px;background:var(--accent);border:none;border-radius:8px;color:#000;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;}
+
+/* ── HISTORY PAGE ── */
+.hist-filter{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;}
+.hist-filter::-webkit-scrollbar{display:none;}
+.filt-chip{padding:6px 14px;border-radius:16px;border:1px solid var(--border);background:var(--card);font-size:11px;font-weight:500;color:var(--muted2);cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.filt-chip.active{background:rgba(232,255,71,.08);border-color:var(--accent);color:var(--accent);}
+
+.hist-entry{background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:10px;overflow:hidden;}
+.hist-head{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.hist-day-name{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1.5px;color:var(--text);}
+.hist-date{font-size:11px;color:var(--muted2);}
+.hist-body{padding:10px 14px;}
+.hist-ex{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.hist-ex:last-child{border-bottom:none;}
+.hist-ex-name{font-size:12px;color:var(--muted2);}
+.hist-ex-val{font-size:12px;color:var(--text);font-weight:600;}
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty-icon{font-size:40px;opacity:.3;margin-bottom:12px;}
+.empty-text{font-size:13px;line-height:1.6;}
+
+/* ── PROGRESS PAGE ── */
+.prog-section{margin-bottom:24px;}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--muted2);margin-bottom:12px;}
+
+.detente-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px;}
+.detente-current{display:flex;align-items:baseline;gap:8px;margin-bottom:12px;}
+.detente-num{font-family:'Bebas Neue',sans-serif;font-size:52px;color:var(--accent);line-height:1;}
+.detente-unit{font-size:16px;color:var(--muted2);}
+.detente-gain{font-size:13px;color:var(--green);font-weight:600;}
+.detente-history{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.detente-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);}
+.detente-row:last-child{border-bottom:none;}
+.detente-row-label{font-size:12px;color:var(--muted2);}
+.detente-row-val{font-size:13px;color:var(--text);font-weight:600;}
+.add-detente-btn{width:100%;padding:11px;background:var(--card2);border:1px solid var(--border2);border-radius:6px;color:var(--accent);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;cursor:pointer;}
+
+.mobility-score-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.mob-score-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;}
+.mob-score-zone{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);margin-bottom:6px;}
+.mob-score-val{font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;margin-bottom:4px;}
+.mob-score-val.score-low{color:var(--red);}
+.mob-score-val.score-mid{color:var(--orange);}
+.mob-score-val.score-high{color:var(--green);}
+.mob-score-label{font-size:11px;color:var(--muted2);}
+.mob-track{height:3px;background:var(--border2);border-radius:2px;margin-top:8px;}
+.mob-fill{height:100%;border-radius:2px;transition:width .5s;}
+
+.pr-list{display:flex;flex-direction:column;gap:8px;}
+.pr-item{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;}
+.pr-name{font-size:13px;color:var(--muted2);}
+.pr-val{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--accent);letter-spacing:1px;}
+.pr-date{font-size:10px;color:var(--muted);margin-top:2px;text-align:right;}
+
+/* ── MOBILITY PAGE ── */
+.mob-zone-tabs{display:flex;gap:6px;margin-bottom:20px;overflow-x:auto;padding-bottom:4px;}
+.mob-zone-tabs::-webkit-scrollbar{display:none;}
+.mob-tab{padding:8px 16px;border-radius:16px;border:1px solid var(--border);background:var(--card);font-size:12px;font-weight:500;color:var(--muted2);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s;}
+.mob-tab.active{background:rgba(71,200,255,.08);border-color:var(--blue);color:var(--blue);}
+
+.mob-exercise{background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:10px;overflow:hidden;}
+.mob-ex-header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+.mob-ex-left{display:flex;align-items:center;gap:12px;}
+.mob-ex-icon{width:36px;height:36px;border-radius:6px;background:rgba(71,200,255,.08);border:1px solid rgba(71,200,255,.15);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.mob-ex-name{font-size:14px;color:var(--text);font-weight:500;}
+.mob-ex-duration{font-size:11px;color:var(--muted2);margin-top:2px;}
+.mob-ex-arrow{font-size:12px;color:var(--muted);transition:transform .2s;}
+.mob-ex-arrow.open{transform:rotate(180deg);}
+.mob-ex-body{display:none;padding:0 16px 14px;border-top:1px solid var(--border);}
+.mob-ex-body.open{display:block;}
+.mob-ex-desc{font-size:13px;color:var(--muted2);line-height:1.7;margin-top:12px;margin-bottom:14px;}
+.mob-ex-target{display:inline-block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--blue);background:rgba(71,200,255,.08);border:1px solid rgba(71,200,255,.15);padding:3px 10px;border-radius:12px;margin-bottom:10px;}
+.timer-btn{width:100%;padding:12px;background:rgba(71,200,255,.08);border:1px solid rgba(71,200,255,.2);border-radius:8px;color:var(--blue);font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;cursor:pointer;transition:all .15s;}
+.timer-btn:active{background:rgba(71,200,255,.15);}
+.timer-running{background:rgba(78,222,128,.08);border-color:rgba(78,222,128,.2);color:var(--green);}
+
+/* ── TIMER OVERLAY ── */
+.timer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:300;display:none;flex-direction:column;align-items:center;justify-content:center;}
+.timer-overlay.open{display:flex;}
+.timer-ex-name{font-size:14px;color:var(--muted2);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.timer-display{font-family:'Bebas Neue',sans-serif;font-size:100px;color:var(--text);letter-spacing:4px;line-height:1;margin-bottom:8px;}
+.timer-display.urgent{color:var(--accent);}
+.timer-side{font-size:14px;color:var(--blue);margin-bottom:40px;letter-spacing:1px;}
+.timer-progress{width:200px;height:4px;background:var(--border2);border-radius:2px;margin-bottom:40px;}
+.timer-prog-fill{height:100%;border-radius:2px;background:var(--accent);transition:width .1s linear;}
+.timer-controls{display:flex;gap:12px;}
+.timer-ctrl{padding:14px 28px;border-radius:8px;border:none;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;}
+.timer-stop{background:var(--card2);color:var(--muted2);}
+.timer-pause{background:var(--accent);color:#000;}
+
+/* Score modal */
+.score-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;display:none;align-items:flex-end;}
+.score-modal.open{display:flex;}
+.score-modal-inner{background:var(--surface);border-radius:16px 16px 0 0;padding:24px 20px 40px;width:100%;border-top:1px solid var(--border2);}
+.score-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;margin-bottom:4px;}
+.score-sub{font-size:12px;color:var(--muted2);margin-bottom:20px;}
+.score-options{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:20px;}
+.score-opt{padding:14px 4px;background:var(--card2);border:2px solid var(--border2);border-radius:8px;font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--muted2);cursor:pointer;text-align:center;transition:all .15s;}
+.score-opt.sel{border-color:var(--blue);color:var(--blue);background:rgba(71,200,255,.08);}
+.score-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:20px;}
+.score-save{width:100%;padding:14px;background:var(--blue);border:none;border-radius:8px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:#000;cursor:pointer;}
+
+/* Detente modal */
+.det-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;display:none;align-items:flex-end;}
+.det-modal.open{display:flex;}
+.det-modal-inner{background:var(--surface);border-radius:16px 16px 0 0;padding:24px 20px 40px;width:100%;border-top:1px solid var(--border2);}
+.det-input-wrap{margin:16px 0;}
+.det-input-wrap label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);display:block;margin-bottom:8px;}
+.det-input{width:100%;background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:16px;color:var(--text);font-size:28px;font-weight:700;text-align:center;font-family:'DM Sans',sans-serif;}
+.det-input:focus{outline:none;border-color:var(--accent);}
+.det-save{width:100%;padding:14px;background:var(--accent);border:none;border-radius:8px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:#000;cursor:pointer;margin-top:12px;}
+
+/* Utility */
+.mt8{margin-top:8px;}.mt12{margin-top:12px;}.mt16{margin-top:16px;}
+.divider{height:1px;background:var(--border);margin:16px 0;}
+</style>
+</head>
+<body>
+
+<div class="pages">
+
+<!-- ══════════════════════════════════════════
+     PAGE 1 — DASHBOARD
+══════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+  <div class="eyebrow">Beks · Programme Athlétique</div>
+  <div class="page-title">TABLEAU<br><span>DE BORD</span></div>
+
+  <div class="stats-grid">
+    <div class="stat-box highlight">
+      <div class="stat-label">Séances cette semaine</div>
+      <div class="stat-val" id="dash-sessions">0</div>
+      <div class="stat-sub">sur 5 prévues</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Semaine actuelle</div>
+      <div class="stat-val" id="dash-week">S1</div>
+      <div class="stat-sub">Phase 1 — Reprise</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Détente actuelle</div>
+      <div class="stat-val" id="dash-detente">—</div>
+      <div class="stat-sub">cm vertical</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Streak</div>
+      <div class="stat-val" id="dash-streak">0</div>
+      <div class="stat-sub">semaines consécutives</div>
+    </div>
+  </div>
+
+  <div class="today-card">
+    <div class="today-label">Aujourd'hui</div>
+    <div class="today-title" id="today-title">Chargement...</div>
+    <div class="today-desc" id="today-desc"></div>
+    <button class="today-btn" onclick="goToWorkout()">VOIR LA SÉANCE →</button>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h3>Mobilité — Scores actuels</h3></div>
+    <div class="card-body">
+      <div class="prog-row">
+        <div class="prog-head"><span class="prog-name">Épaules</span><span class="prog-val" id="dash-score-epaules">—/5</span></div>
+        <div class="prog-track"><div class="prog-fill" id="dash-fill-epaules" style="width:0%"></div></div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-head"><span class="prog-name">Hanches</span><span class="prog-val" id="dash-score-hanches">—/5</span></div>
+        <div class="prog-track"><div class="prog-fill" id="dash-fill-hanches" style="width:0%"></div></div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-head"><span class="prog-name">Chevilles</span><span class="prog-val" id="dash-score-chevilles">—/5</span></div>
+        <div class="prog-track"><div class="prog-fill" id="dash-fill-chevilles" style="width:0%"></div></div>
+      </div>
+      <div class="prog-row" style="margin-bottom:0">
+        <div class="prog-head"><span class="prog-name">Ischio</span><span class="prog-val" id="dash-score-ischio">—/5</span></div>
+        <div class="prog-track"><div class="prog-fill" id="dash-fill-ischio" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h3>Dernières séances</h3></div>
+    <div class="card-body" id="recent-sessions">
+      <div class="empty-state" style="padding:20px 0;">
+        <div class="empty-icon">📋</div>
+        <div class="empty-text">Aucune séance encore.<br>Lance ta première séance !</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE 2 — PROGRAMME & LOG
+══════════════════════════════════════════ -->
+<div class="page" id="page-workout">
+  <div class="eyebrow">Programme</div>
+  <div class="page-title">SÉ<span>ANCE</span></div>
+
+  <div class="phase-row">
+    <div class="phase-chip active-p1" onclick="setPhase(1)" id="chip-p1">Phase 1 — Reprise</div>
+    <div class="phase-chip" onclick="setPhase(2)" id="chip-p2">Phase 2 — Principal</div>
+  </div>
+
+  <div class="week-row" id="week-row"></div>
+  <div class="day-row" id="day-row"></div>
+  <div class="week-note-box" id="week-note"></div>
+  <div id="exercises-container"></div>
+  <button class="finish-day-btn" id="finish-btn" onclick="finishDay()">✓ MARQUER SÉANCE COMPLÈTE</button>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE 3 — HISTORIQUE
+══════════════════════════════════════════ -->
+<div class="page" id="page-history">
+  <div class="eyebrow">Journal</div>
+  <div class="page-title">HISTO<span>RIQUE</span></div>
+
+  <div class="hist-filter">
+    <div class="filt-chip active" onclick="filterHist('all',this)">Tout</div>
+    <div class="filt-chip" onclick="filterHist('Lundi',this)">Lundi</div>
+    <div class="filt-chip" onclick="filterHist('Mardi',this)">Mardi</div>
+    <div class="filt-chip" onclick="filterHist('Mercredi',this)">Mercredi</div>
+    <div class="filt-chip" onclick="filterHist('Jeudi',this)">Jeudi</div>
+    <div class="filt-chip" onclick="filterHist('Vendredi',this)">Vendredi</div>
+  </div>
+  <div id="history-list"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE 4 — PROGRESSION
+══════════════════════════════════════════ -->
+<div class="page" id="page-progress">
+  <div class="eyebrow">Mesures & Records</div>
+  <div class="page-title">PROGRES<span>SION</span></div>
+
+  <div class="prog-section">
+    <div class="section-title">DÉTENTE VERTICALE</div>
+    <div class="detente-box">
+      <div class="detente-current">
+        <div class="detente-num" id="prog-detente-val">—</div>
+        <div>
+          <div class="detente-unit">cm</div>
+          <div class="detente-gain" id="prog-detente-gain"></div>
+        </div>
+      </div>
+      <div class="detente-history" id="detente-history-list"></div>
+      <button class="add-detente-btn" onclick="openDetenteModal()">+ AJOUTER MESURE</button>
+    </div>
+  </div>
+
+  <div class="prog-section">
+    <div class="section-title">MOBILITÉ PAR ZONE</div>
+    <div class="mobility-score-grid">
+      <div class="mob-score-card">
+        <div class="mob-score-zone">Épaules</div>
+        <div class="mob-score-val" id="pscore-epaules">—</div>
+        <div class="mob-score-label" id="pscorelab-epaules">Non évalué</div>
+        <div class="mob-track"><div class="mob-fill" id="pfill-epaules" style="width:0%;background:var(--red)"></div></div>
+      </div>
+      <div class="mob-score-card">
+        <div class="mob-score-zone">Hanches</div>
+        <div class="mob-score-val" id="pscore-hanches">—</div>
+        <div class="mob-score-label" id="pscorelab-hanches">Non évalué</div>
+        <div class="mob-track"><div class="mob-fill" id="pfill-hanches" style="width:0%;background:var(--red)"></div></div>
+      </div>
+      <div class="mob-score-card">
+        <div class="mob-score-zone">Chevilles</div>
+        <div class="mob-score-val" id="pscore-chevilles">—</div>
+        <div class="mob-score-label" id="pscorelab-chevilles">Non évalué</div>
+        <div class="mob-track"><div class="mob-fill" id="pfill-chevilles" style="width:0%;background:var(--red)"></div></div>
+      </div>
+      <div class="mob-score-card">
+        <div class="mob-score-zone">Ischio</div>
+        <div class="mob-score-val" id="pscore-ischio">—</div>
+        <div class="mob-score-label" id="pscorelab-ischio">Non évalué</div>
+        <div class="mob-track"><div class="mob-fill" id="pfill-ischio" style="width:0%;background:var(--red)"></div></div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);text-align:center;">Score sur 5 · Évalue dans la section Mobilité après chaque routine</div>
+  </div>
+
+  <div class="prog-section">
+    <div class="section-title">RECORDS PERSONNELS</div>
+    <div class="pr-list" id="pr-list">
+      <div class="empty-state" style="padding:20px 0">
+        <div class="empty-icon">🏆</div>
+        <div class="empty-text">Tes records apparaîtront ici<br>quand tu loggues tes séances.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE 5 — MOBILITÉ
+══════════════════════════════════════════ -->
+<div class="page" id="page-mobility">
+  <div class="eyebrow">Mobilité & Étirements</div>
+  <div class="page-title">MOBI<span>LITÉ</span></div>
+
+  <div class="mob-zone-tabs">
+    <div class="mob-tab active" onclick="setMobZone('epaules',this)">Épaules</div>
+    <div class="mob-tab" onclick="setMobZone('hanches',this)">Hanches</div>
+    <div class="mob-tab" onclick="setMobZone('chevilles',this)">Chevilles</div>
+    <div class="mob-tab" onclick="setMobZone('ischio',this)">Ischio</div>
+    <div class="mob-tab" onclick="setMobZone('routine',this)">Routine complète</div>
+  </div>
+
+  <div id="mob-content"></div>
+
+  <div class="card mt12">
+    <div class="card-header"><h3>Évaluer ma mobilité aujourd'hui</h3></div>
+    <div class="card-body">
+      <div style="font-size:12px;color:var(--muted2);margin-bottom:12px;">Après ta routine, donne un score honnête à chaque zone. 1 = très raide, 5 = excellent.</div>
+      <button style="width:100%;padding:11px;background:rgba(71,200,255,.08);border:1px solid rgba(71,200,255,.2);border-radius:8px;color:var(--blue);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;cursor:pointer;" onclick="openScoreModal('epaules')">ÉVALUER ÉPAULES</button>
+      <div style="height:8px;"></div>
+      <button style="width:100%;padding:11px;background:rgba(71,200,255,.08);border:1px solid rgba(71,200,255,.2);border-radius:8px;color:var(--blue);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;cursor:pointer;" onclick="openScoreModal('hanches')">ÉVALUER HANCHES</button>
+      <div style="height:8px;"></div>
+      <button style="width:100%;padding:11px;background:rgba(71,200,255,.08);border:1px solid rgba(71,200,255,.2);border-radius:8px;color:var(--blue);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;cursor:pointer;" onclick="openScoreModal('chevilles')">ÉVALUER CHEVILLES</button>
+      <div style="height:8px;"></div>
+      <button style="width:100%;padding:11px;background:rgba(71,200,255,.08);border:1px solid rgba(71,200,255,.2);border-radius:8px;color:var(--blue);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;cursor:pointer;" onclick="openScoreModal('ischio')">ÉVALUER ISCHIO</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE EXPORT -->
+<div class="page" id="page-export">
+  <div class="eyebrow">Partage avec Claude</div>
+  <div class="page-title">EX<span>PORT</span></div>
+  <div class="card" style="margin-bottom:12px;">
+    <div class="card-body">
+      <div style="font-size:13px;color:var(--muted2);line-height:1.7;margin-bottom:16px;">
+        Génère un résumé complet de tes stats et copie-le dans Claude pour une analyse personnalisée — ajustements d'exercices, diagnostic de progression, recommandations.
+      </div>
+      <button onclick="generateExport()" style="width:100%;padding:13px;background:var(--accent);border:none;border-radius:8px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:#000;cursor:pointer;">GÉNÉRER MON RAPPORT</button>
+    </div>
+  </div>
+  <div id="export-output" style="display:none;">
+    <div class="card">
+      <div class="card-header"><h3>TON RAPPORT — COPIE TOUT</h3></div>
+      <div class="card-body">
+        <textarea id="export-text" style="width:100%;background:var(--card2);border:1px solid var(--border2);border-radius:6px;padding:12px;color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;line-height:1.7;min-height:320px;resize:none;" readonly></textarea>
+        <button onclick="copyExport()" id="copy-btn" style="width:100%;margin-top:12px;padding:13px;background:var(--card2);border:1px solid var(--border2);border-radius:8px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--accent);cursor:pointer;">📋 COPIER</button>
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px;">
+      <div class="card-body">
+        <div style="font-size:12px;color:var(--muted2);line-height:1.7;">
+          <strong style="color:var(--text);">Comment utiliser :</strong><br>
+          1. Appuie sur COPIER<br>
+          2. Ouvre Claude<br>
+          3. Colle le texte et dis ce que tu veux analyser<br><br>
+          Exemple : <em style="color:var(--muted);">"Voici mes stats — analyse ma progression et dis-moi si je dois changer quelque chose"</em>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end pages -->
+
+<!-- ── BOTTOM NAV ── -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="goPage('home',this)"><div class="nav-icon">🏠</div>Accueil</button>
+  <button class="nav-btn" onclick="goPage('workout',this)"><div class="nav-icon">💪</div>Séance</button>
+  <button class="nav-btn" onclick="goPage('mobility',this)"><div class="nav-icon">🧘</div>Mobilité</button>
+  <button class="nav-btn" onclick="goPage('progress',this)"><div class="nav-icon">📈</div>Progrès</button>
+  <button class="nav-btn" onclick="goPage('export',this)"><div class="nav-icon">📤</div>Export</button>
+</nav>
+
+<!-- ── LOG MODAL ── -->
+<div class="modal-overlay" id="log-modal" onclick="closeLogModal(event)">
+  <div class="modal">
+    <div class="modal-title" id="modal-ex-name">Exercice</div>
+    <div class="modal-sub" id="modal-ex-sets">Sets prévus</div>
+    <div class="modal-inputs">
+      <div class="input-group">
+        <label>Charge (kg)</label>
+        <input type="number" id="modal-kg" placeholder="0" min="0" step="0.5">
+      </div>
+      <div class="input-group">
+        <label>Reps / Temps</label>
+        <input type="text" id="modal-reps" placeholder="8">
+      </div>
+    </div>
+    <textarea class="modal-note" id="modal-note" placeholder="Note optionnelle (ressenti, difficulté...)"></textarea>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeLogModal()">Annuler</button>
+      <button class="btn-save" onclick="saveLog()">SAUVEGARDER</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TIMER OVERLAY ── -->
+<div class="timer-overlay" id="timer-overlay">
+  <div class="timer-ex-name" id="timer-ex-name">Exercice</div>
+  <div class="timer-display" id="timer-display">00</div>
+  <div class="timer-side" id="timer-side"></div>
+  <div class="timer-progress"><div class="timer-prog-fill" id="timer-prog-fill" style="width:100%"></div></div>
+  <div class="timer-controls">
+    <button class="timer-ctrl timer-stop" onclick="stopTimer()">STOP</button>
+    <button class="timer-ctrl timer-pause" id="timer-pause-btn" onclick="togglePause()">PAUSE</button>
+  </div>
+</div>
+
+<!-- ── SCORE MODAL ── -->
+<div class="score-modal" id="score-modal" onclick="closeScoreModal(event)">
+  <div class="score-modal-inner">
+    <div class="score-title" id="score-modal-title">Évaluer</div>
+    <div class="score-sub">Comment est ta mobilité sur cette zone aujourd'hui ?</div>
+    <div class="score-options">
+      <div class="score-opt" onclick="selectScore(1)">1</div>
+      <div class="score-opt" onclick="selectScore(2)">2</div>
+      <div class="score-opt" onclick="selectScore(3)">3</div>
+      <div class="score-opt" onclick="selectScore(4)">4</div>
+      <div class="score-opt" onclick="selectScore(5)">5</div>
+    </div>
+    <div class="score-labels"><span>Très raide</span><span>Excellent</span></div>
+    <button class="score-save" onclick="saveScore()">SAUVEGARDER</button>
+  </div>
+</div>
+
+<!-- ── DETENTE MODAL ── -->
+<div class="det-modal" id="det-modal" onclick="closeDetModal(event)">
+  <div class="det-modal-inner">
+    <div class="score-title">Nouvelle mesure</div>
+    <div class="score-sub">Entre ta détente verticale mesurée en centimètres.</div>
+    <div class="det-input-wrap">
+      <label>Détente verticale (cm)</label>
+      <input class="det-input" type="number" id="det-input" placeholder="65" min="0" max="120">
+    </div>
+    <button class="det-save" onclick="saveDetente()">SAUVEGARDER</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════
+// DATA — PROGRAMME
+// ════════════════════════════════════════════
+
+const DAYS = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi'];
+const DAY_TITLES = {
+  'Lundi':'Force Bas du Corps',
+  'Mardi':'Plyo Verticale',
+  'Mercredi':'Force Haut + Calisthenics',
+  'Jeudi':'Plyo Latérale + Agilité',
+  'Vendredi':'Mobilité + Activation'
+};
+
+const PROGRAM = {
+  1: { // Phase 1
+    weeks: {
+      'S1': {
+        note: '<strong>Semaine 1 · Réveil musculaire.</strong> Charges à 50–65%. Technique prioritaire. Aucun échec musculaire. Repos 2–3 min entre séries.',
+        days: {
+          'Lundi': [
+            {group:'Activation', exercises:[
+              {name:'Hip circle + 90/90 switch',sets:'2×10',iso:false},
+              {name:'Glute bridge',sets:'2×15',iso:false}]},
+            {group:'Principal', exercises:[
+              {name:'Goblet squat',sets:'4×10 @léger',iso:false},
+              {name:'Hip thrust barre',sets:'4×10 @60%',iso:false},
+              {name:'Squat bulgare',sets:'3×8/jambe @poids corps',iso:false},
+              {name:'Cossack squat',sets:'3×6/côté',iso:false}]},
+            {group:'Isométrie tendon', exercises:[
+              {name:'Split squat hold (bas)',sets:'2×20s/jambe',iso:true},
+              {name:'Calf raise hold en pointe',sets:'2×20s',iso:true},
+              {name:'Nordic hamstring curl',sets:'3×4 @50% effort',iso:false,note:'Descente 4 sec. Stop avant échec.'}]}
+          ],
+          'Mardi': [
+            {group:'Activation', exercises:[
+              {name:'Ankle bounce léger',sets:'2×20s',iso:true},
+              {name:'Skip A + B',sets:'2×20m',iso:false}]},
+            {group:'Plyo — volume réduit', exercises:[
+              {name:'Broad jumps',sets:'4×3',iso:false},
+              {name:'Box jumps (caisse basse)',sets:'4×4',iso:false},
+              {name:'Split squat jumps',sets:'3×5/jambe',iso:false}]},
+            {group:'Vitesse', exercises:[
+              {name:'Sprints 20m',sets:'5×20m @80%',iso:false,note:'Qualité d\'atterrissage — genou dans l\'axe'}]}
+          ],
+          'Mercredi': [
+            {group:'Force horizontale', exercises:[
+              {name:'Bench press',sets:'4×8 @60%',iso:false},
+              {name:'Rowing barre',sets:'4×10',iso:false}]},
+            {group:'Calisthenics', exercises:[
+              {name:'Pull-ups strictes',sets:'5×3–4 (stop avant échec)',iso:false},
+              {name:'Dips lestés ou poids corps',sets:'4×6–8',iso:false},
+              {name:'Ring push-ups / pompes',sets:'3×10',iso:false}]},
+            {group:'Core', exercises:[
+              {name:'Hollow body hold',sets:'3×25s',iso:true},
+              {name:'Pallof press',sets:'3×10/côté',iso:false}]}
+          ],
+          'Jeudi': [
+            {group:'Latéralité', exercises:[
+              {name:'Skater bounds (légers)',sets:'4×8',iso:false},
+              {name:'Sauts latéraux unilatéraux',sets:'3×6/jambe',iso:false},
+              {name:'Landmine lateral squat',sets:'3×8/jambe @léger',iso:false}]},
+            {group:'Agilité', exercises:[
+              {name:'Quick feet',sets:'4×15s',iso:false},
+              {name:'Sprint multidirectionnel 10m',sets:'5×10m',iso:false}]},
+            {group:'Core latéral', exercises:[
+              {name:'Copenhagen plank',sets:'3×20s/côté',iso:true},
+              {name:'Side plank',sets:'3×25s/côté',iso:true}]}
+          ],
+          'Vendredi': [
+            {group:'Mobilité hanches', exercises:[
+              {name:'90/90 switch actif',sets:'2×8/côté',iso:false},
+              {name:'Hip airscrew',sets:'2×6/côté',iso:false},
+              {name:'Pigeon pose actif',sets:'2×30s/côté',iso:true}]},
+            {group:'Mobilité chevilles', exercises:[
+              {name:'Banded dorsiflexion',sets:'2×10/côté',iso:false},
+              {name:'Wall ankle drill',sets:'2×10/côté',iso:false}]},
+            {group:'Quick feet léger', exercises:[
+              {name:'Quick feet variation',sets:'3×12s',iso:false},
+              {name:'Calf raise explosif',sets:'3×12',iso:false}]}
+          ]
+        }
+      },
+      'S2': {
+        note: '<strong>Semaine 2 · Consolidation.</strong> Même structure, légère hausse. Charges à 65–70%. Intro front lever tuck.',
+        days: {
+          'Lundi': [
+            {group:'Principal', exercises:[
+              {name:'Goblet squat',sets:'4×10 @hausse légère',iso:false},
+              {name:'Hip thrust barre',sets:'4×10 @65–70%',iso:false},
+              {name:'Squat bulgare',sets:'3×10/jambe @léger lest',iso:false},
+              {name:'Cossack squat',sets:'3×8/côté',iso:false},
+              {name:'Farmer\'s carry',sets:'3×30m',iso:false}]},
+            {group:'Isométrie + tendon', exercises:[
+              {name:'Split squat hold (bas)',sets:'3×25s/jambe',iso:true},
+              {name:'Nordic hamstring curl',sets:'3×5 @60% effort',iso:false}]}
+          ],
+          'Mardi': [
+            {group:'Plyo', exercises:[
+              {name:'Broad jumps',sets:'4×4',iso:false},
+              {name:'Box jumps',sets:'5×4',iso:false},
+              {name:'Split squat jumps',sets:'3×6/jambe',iso:false},
+              {name:'Calf raise explosif',sets:'3×15',iso:false}]},
+            {group:'Vitesse', exercises:[
+              {name:'Sprints 20m',sets:'6×20m @85%',iso:false}]}
+          ],
+          'Mercredi': [
+            {group:'Force', exercises:[
+              {name:'Bench press explosif',sets:'4×6 @65%',iso:false},
+              {name:'Rowing barre',sets:'4×10',iso:false},
+              {name:'Landmine press unilatéral',sets:'3×10/côté',iso:false}]},
+            {group:'Calisthenics', exercises:[
+              {name:'Pull-ups strictes',sets:'5×4–5',iso:false},
+              {name:'Pull-ups explosives',sets:'3×3',iso:false},
+              {name:'Dips lestés',sets:'4×8',iso:false},
+              {name:'Front lever tuck hold',sets:'3×max (intro)',iso:true}]}
+          ],
+          'Jeudi': [
+            {group:'Latéralité', exercises:[
+              {name:'Skater bounds',sets:'4×10',iso:false},
+              {name:'Sauts latéraux unilatéraux',sets:'4×7/jambe',iso:false},
+              {name:'Landmine lateral squat',sets:'3×10/jambe',iso:false}]},
+            {group:'Agilité + vitesse', exercises:[
+              {name:'Quick feet',sets:'4×15s',iso:false},
+              {name:'Sprint multidirectionnel 10m',sets:'6×10m',iso:false}]},
+            {group:'Core', exercises:[
+              {name:'Copenhagen plank',sets:'3×25s/côté',iso:true},
+              {name:'Superman hold',sets:'3×20s',iso:true}]}
+          ],
+          'Vendredi': [
+            {group:'Mobilité', exercises:[
+              {name:'Routine hanches complète',sets:'10 min',iso:false},
+              {name:'Thoracique foam roller + rotation',sets:'5 min',iso:false},
+              {name:'Mobilité chevilles',sets:'5 min',iso:false}]},
+            {group:'Explosivité légère', exercises:[
+              {name:'Quick feet + changements direction',sets:'4×15s',iso:false},
+              {name:'Calf raise explosif',sets:'3×15',iso:false}]}
+          ]
+        }
+      },
+      'S3': {
+        note: '<strong>Semaine 3 · Montée en intensité.</strong> Introduction des depth jumps. Nordics à 70–75%. Charges 70–80%.',
+        days: {
+          'Lundi': [
+            {group:'Principal', exercises:[
+              {name:'Hip thrust lourd',sets:'4×8 @75–80%',iso:false},
+              {name:'Squat bulgare lesté',sets:'4×8/jambe',iso:false},
+              {name:'Goblet squat lourd',sets:'4×8',iso:false},
+              {name:'Cossack squat lesté',sets:'3×8/côté',iso:false},
+              {name:'Farmer\'s carry lourd',sets:'4×30m',iso:false}]},
+            {group:'Tendon', exercises:[
+              {name:'Nordic hamstring curl',sets:'3×max @70–75%',iso:false},
+              {name:'Nordic hold (mi-course)',sets:'2×15s',iso:true}]}
+          ],
+          'Mardi': [
+            {group:'Plyo', exercises:[
+              {name:'Broad jumps',sets:'5×4',iso:false},
+              {name:'Box jumps (caisse moyenne)',sets:'5×4',iso:false},
+              {name:'Depth jumps (intro)',sets:'3×4',iso:false,note:'Caisse basse. Atterrissage souple.'},
+              {name:'Split squat jumps',sets:'3×6/jambe',iso:false}]},
+            {group:'Vitesse', exercises:[
+              {name:'Sprints 20m',sets:'6×20m @90–95%',iso:false}]}
+          ],
+          'Mercredi': [
+            {group:'Force', exercises:[
+              {name:'Bench press explosif',sets:'5×4 @70%',iso:false},
+              {name:'Rowing barre',sets:'4×10',iso:false}]},
+            {group:'Calisthenics', exercises:[
+              {name:'Pull-ups strictes',sets:'6×4–5',iso:false},
+              {name:'Pull-ups explosives',sets:'4×3',iso:false},
+              {name:'Chest-to-bar excentrique',sets:'3×3 (intro)',iso:false},
+              {name:'Dips lestés',sets:'4×8–10',iso:false},
+              {name:'Front lever tuck hold',sets:'4×max',iso:true},
+              {name:'Dragon flag',sets:'3×5 (intro)',iso:false}]}
+          ],
+          'Jeudi': [
+            {group:'Plyo latérale', exercises:[
+              {name:'Skater bounds + hold 3s',sets:'5×10',iso:false},
+              {name:'Sauts latéraux unilatéraux',sets:'4×8/jambe',iso:false},
+              {name:'Landmine lateral squat',sets:'4×10/jambe',iso:false}]},
+            {group:'Agilité', exercises:[
+              {name:'Quick feet + changements direction',sets:'4×20s',iso:false},
+              {name:'Sprint multidirectionnel 10m',sets:'6×10m',iso:false}]},
+            {group:'Core', exercises:[
+              {name:'Copenhagen plank',sets:'3×max',iso:true},
+              {name:'Side plank twist',sets:'3×10/côté',iso:false},
+              {name:'Hanging leg raises',sets:'3×8',iso:false}]}
+          ],
+          'Vendredi': [
+            {group:'Mobilité', exercises:[
+              {name:'Hanches + chevilles + thoracique',sets:'15 min',iso:false}]},
+            {group:'Explosivité légère', exercises:[
+              {name:'Quick feet haute fréquence',sets:'4×15s',iso:false},
+              {name:'Mini broad jumps réactifs',sets:'3×3',iso:false},
+              {name:'Calf raise explosif',sets:'3×15',iso:false}]}
+          ]
+        }
+      },
+      'S4': {
+        note: '<strong>Semaine 4 · Transition.</strong> Volume –10%, intensité maintenue. Évalue ta récupération. Si tout va bien → Phase 2.',
+        days: {
+          'Lundi': [
+            {group:'Principal', exercises:[
+              {name:'Hip thrust lourd',sets:'4×8 @80%',iso:false},
+              {name:'Squat bulgare lesté',sets:'4×8/jambe',iso:false},
+              {name:'Goblet squat lourd',sets:'3×8',iso:false},
+              {name:'Nordic hamstring curl',sets:'3×max @80%',iso:false}]},
+            {group:'Isométrie', exercises:[
+              {name:'Wall sit',sets:'3×40s',iso:true},
+              {name:'Split squat hold',sets:'2×25s/jambe',iso:true}]}
+          ],
+          'Mardi': [
+            {group:'Plyo', exercises:[
+              {name:'Box jumps hauts',sets:'5×4',iso:false},
+              {name:'Depth jumps',sets:'4×4',iso:false},
+              {name:'Broad jumps',sets:'4×4',iso:false}]},
+            {group:'Vitesse', exercises:[
+              {name:'Sprints 20m max',sets:'6×20m',iso:false}]}
+          ],
+          'Mercredi': [
+            {group:'Calisthenics', exercises:[
+              {name:'Pull-ups strictes',sets:'6×5',iso:false},
+              {name:'Pull-ups explosives',sets:'4×3',iso:false},
+              {name:'Chest-to-bar excentrique',sets:'3×3',iso:false},
+              {name:'Dips lestés',sets:'4×8',iso:false},
+              {name:'Front lever tuck hold',sets:'4×max',iso:true},
+              {name:'Dragon flag',sets:'3×5–6',iso:false}]},
+            {group:'Force', exercises:[
+              {name:'Bench press explosif',sets:'4×5 @70%',iso:false}]}
+          ],
+          'Jeudi': [
+            {group:'Latéralité', exercises:[
+              {name:'Skater bounds explosifs',sets:'5×10',iso:false},
+              {name:'Sauts latéraux unilatéraux',sets:'4×8/jambe',iso:false},
+              {name:'Cossack squat lesté',sets:'3×8/côté',iso:false}]},
+            {group:'Core complet', exercises:[
+              {name:'Copenhagen plank',sets:'3×max',iso:true},
+              {name:'Hollow rocks',sets:'3×20',iso:false},
+              {name:'Hanging leg raises',sets:'3×10',iso:false}]}
+          ],
+          'Vendredi': [
+            {group:'Mobilité complète', exercises:[
+              {name:'Hanches 90/90 + airscrew',sets:'10 min',iso:false},
+              {name:'Chevilles + thoracique',sets:'8 min',iso:false}]},
+            {group:'Activation matchs', exercises:[
+              {name:'Quick feet',sets:'3×15s',iso:false},
+              {name:'Mini sprints 10m',sets:'3×10m',iso:false}]}
+          ]
+        }
+      }
+    }
+  },
+  2: { // Phase 2
+    weeks: {
+      'S5': {
+        note: '<strong>Phase 2 · Semaine 1.</strong> Programme principal à plein régime. Plyo toujours en premier. Surcharge progressive à partir de maintenant.',
+        days: {
+          'Lundi': [
+            {group:'Principal', exercises:[
+              {name:'Hip thrust barre (lourd)',sets:'5×5 @80–85%',iso:false},
+              {name:'Squat bulgare lesté',sets:'4×8/jambe',iso:false},
+              {name:'Goblet squat lourd',sets:'4×8',iso:false},
+              {name:'Cossack squat lesté',sets:'3×8/côté',iso:false},
+              {name:'Farmer\'s carry lourd',sets:'4×30m',iso:false}]},
+            {group:'Tendon + Isométrie', exercises:[
+              {name:'Nordic hamstring curl',sets:'4×max',iso:false},
+              {name:'Split squat hold (bas)',sets:'3×30s/jambe',iso:true},
+              {name:'Calf raise hold en pointe',sets:'3×25s',iso:true}]}
+          ],
+          'Mardi': [
+            {group:'Plyo (SNC frais — toujours en premier)', exercises:[
+              {name:'Broad jumps',sets:'5×4',iso:false},
+              {name:'Box jumps hauts',sets:'5×4',iso:false},
+              {name:'Depth jumps',sets:'4×5',iso:false},
+              {name:'Split squat jumps',sets:'3×6/jambe',iso:false}]},
+            {group:'Vitesse', exercises:[
+              {name:'Sprints 20m max',sets:'6–8×20m',iso:false,note:'Repos 90s min. 100% intensité.'},
+              {name:'Calf raise explosif',sets:'3×15',iso:false}]}
+          ],
+          'Mercredi': [
+            {group:'Force', exercises:[
+              {name:'Bench press explosif',sets:'5×3 @70–75%',iso:false},
+              {name:'Rowing barre ou anneaux',sets:'4×10',iso:false},
+              {name:'Landmine press unilatéral',sets:'4×10/côté',iso:false}]},
+            {group:'Calisthenics', exercises:[
+              {name:'Pull-ups strictes (± lest)',sets:'6×4–5',iso:false},
+              {name:'Pull-ups explosives',sets:'4×3',iso:false},
+              {name:'Chest-to-bar excentrique',sets:'4×3–4',iso:false},
+              {name:'Dips lestés / straight bar dips',sets:'4×max',iso:false},
+              {name:'Front lever tuck → avancé',sets:'4×max',iso:true},
+              {name:'Dragon flag',sets:'3×6–8',iso:false}]},
+            {group:'Core', exercises:[
+              {name:'Hollow body hold',sets:'3×35s',iso:true},
+              {name:'Pallof press',sets:'3×12/côté',iso:false}]}
+          ],
+          'Jeudi': [
+            {group:'Plyo latérale', exercises:[
+              {name:'Skater bounds explosifs',sets:'5×10',iso:false},
+              {name:'Sauts latéraux unilatéraux',sets:'4×8/jambe',iso:false},
+              {name:'Bulgarian split squat jump',sets:'4×6/jambe',iso:false}]},
+            {group:'Force unilatérale', exercises:[
+              {name:'Landmine lateral squat',sets:'4×10/jambe',iso:false}]},
+            {group:'Agilité + vitesse', exercises:[
+              {name:'Quick feet + changements',sets:'4×20s',iso:false},
+              {name:'Sprint multidirectionnel 10m',sets:'6×10m',iso:false}]},
+            {group:'Core latéral', exercises:[
+              {name:'Copenhagen plank',sets:'3×max',iso:true},
+              {name:'Side plank twist',sets:'3×12/côté',iso:false},
+              {name:'Hanging leg raises / toes to bar',sets:'3×10',iso:false}]}
+          ],
+          'Vendredi': [
+            {group:'Mobilité active (20 min)', exercises:[
+              {name:'90/90 switch + hip airscrew',sets:'2×8/côté',iso:false},
+              {name:'Pigeon actif + fentes profondes',sets:'2×6/côté',iso:false},
+              {name:'Thoracique foam roller + rotation',sets:'5 min',iso:false},
+              {name:'Banded dorsiflexion',sets:'2×10/côté',iso:false}]},
+            {group:'Explosivité légère — prép matchs', exercises:[
+              {name:'Quick feet haute fréquence',sets:'4×15s',iso:false},
+              {name:'Mini sprints 10m réactifs',sets:'3×10m',iso:false},
+              {name:'Calf raise explosif',sets:'3×15',iso:false}]}
+          ]
+        }
+      },
+      'S6': {note:'<strong>Phase 2 · Semaine 2.</strong> +2.5 kg sur hip thrust si S5 propre. Pull-ups : essaie 2.5 kg lest si 6×5 facile.',days:{
+        'Lundi':[{group:'Principal',exercises:[{name:'Hip thrust barre (lourd)',sets:'5×5 @+2.5kg vs S5',iso:false},{name:'Squat bulgare lesté',sets:'4×8/jambe',iso:false},{name:'Goblet squat lourd',sets:'4×8',iso:false},{name:'Cossack squat lesté',sets:'3×8/côté',iso:false},{name:'Farmer\'s carry lourd',sets:'4×30m',iso:false}]},{group:'Tendon',exercises:[{name:'Nordic hamstring curl',sets:'4×max',iso:false},{name:'Split squat hold',sets:'3×30s/jambe',iso:true}]}],
+        'Mardi':[{group:'Plyo',exercises:[{name:'Broad jumps',sets:'5×4',iso:false},{name:'Box jumps hauts',sets:'5×4',iso:false},{name:'Depth jumps',sets:'4×5',iso:false},{name:'Split squat jumps',sets:'3×6/jambe',iso:false}]},{group:'Vitesse',exercises:[{name:'Sprints 20m max',sets:'7×20m',iso:false}]}],
+        'Mercredi':[{group:'Force',exercises:[{name:'Bench press explosif',sets:'5×3 @+2.5kg',iso:false},{name:'Rowing barre',sets:'4×10',iso:false},{name:'Landmine press',sets:'4×10/côté',iso:false}]},{group:'Calisthenics',exercises:[{name:'Pull-ups strictes (2.5kg lest)',sets:'6×4–5',iso:false},{name:'Pull-ups explosives',sets:'4×3',iso:false},{name:'Chest-to-bar excentrique',sets:'4×4',iso:false},{name:'Dips lestés',sets:'4×max',iso:false},{name:'Front lever tuck avancé',sets:'4×max',iso:true},{name:'Dragon flag',sets:'3×7–8',iso:false}]},{group:'Core',exercises:[{name:'Hollow body hold',sets:'3×35s',iso:true},{name:'Pallof press',sets:'3×12/côté',iso:false}]}],
+        'Jeudi':[{group:'Plyo latérale',exercises:[{name:'Skater bounds explosifs',sets:'5×10',iso:false},{name:'Sauts latéraux unilatéraux',sets:'4×8/jambe',iso:false},{name:'Bulgarian split squat jump',sets:'4×6/jambe',iso:false}]},{group:'Agilité',exercises:[{name:'Quick feet',sets:'4×20s',iso:false},{name:'Sprint multidirectionnel 10m',sets:'6×10m',iso:false}]},{group:'Core',exercises:[{name:'Copenhagen plank',sets:'3×max',iso:true},{name:'Side plank twist',sets:'3×12/côté',iso:false},{name:'Toes to bar',sets:'3×10',iso:false}]}],
+        'Vendredi':[{group:'Mobilité',exercises:[{name:'Routine hanches + chevilles + thoracique',sets:'20 min',iso:false}]},{group:'Activation',exercises:[{name:'Quick feet',sets:'4×15s',iso:false},{name:'Mini sprints 10m',sets:'3×10m',iso:false},{name:'Calf raise explosif',sets:'3×15',iso:false}]}]
+      }},
+      'S7': {note:'<strong>Phase 2 · Semaine 3.</strong> Semaine intense. Teste tes maxes sur pull-ups et hip thrust. Depth jumps : contact au sol le plus court possible.',days:{
+        'Lundi':[{group:'Principal',exercises:[{name:'Hip thrust barre (lourd)',sets:'5×5 @85%+',iso:false},{name:'Squat bulgare lesté',sets:'4×8/jambe',iso:false},{name:'Goblet squat lourd',sets:'4×8',iso:false},{name:'Farmer\'s carry lourd',sets:'4×30m',iso:false}]},{group:'Tendon',exercises:[{name:'Nordic hamstring curl',sets:'4×max',iso:false},{name:'Nordic hold (mi-course)',sets:'3×15s',iso:true},{name:'Wall sit',sets:'3×45s',iso:true}]}],
+        'Mardi':[{group:'Plyo',exercises:[{name:'Broad jumps',sets:'5×5',iso:false},{name:'Box jumps hauts',sets:'5×5',iso:false},{name:'Depth jumps (contact court)',sets:'4×5',iso:false,note:'Objectif : rebond immédiat, contact sol < 0.2s'},{name:'Split squat jumps',sets:'4×6/jambe',iso:false}]},{group:'Vitesse',exercises:[{name:'Sprints 20m max',sets:'8×20m',iso:false}]}],
+        'Mercredi':[{group:'Force',exercises:[{name:'Bench press explosif',sets:'5×3 @75%',iso:false},{name:'Rowing barre',sets:'4×10',iso:false}]},{group:'Calisthenics',exercises:[{name:'Pull-ups strictes (5kg lest)',sets:'6×4–5',iso:false},{name:'Pull-ups explosives',sets:'5×3',iso:false},{name:'Chest-to-bar excentrique',sets:'4×4–5',iso:false},{name:'Dips lestés',sets:'4×max',iso:false},{name:'Front lever advanced tuck',sets:'4×max',iso:true},{name:'Dragon flag (3s descente)',sets:'3×8',iso:false}]},{group:'Core',exercises:[{name:'Hollow body hold',sets:'3×40s',iso:true},{name:'Pallof press',sets:'3×12/côté',iso:false}]}],
+        'Jeudi':[{group:'Plyo latérale',exercises:[{name:'Skater bounds explosifs',sets:'5×10',iso:false},{name:'Sauts latéraux unilatéraux',sets:'4×8/jambe',iso:false},{name:'Bulgarian split squat jump',sets:'4×6/jambe',iso:false}]},{group:'Agilité',exercises:[{name:'Quick feet',sets:'4×20s',iso:false},{name:'Sprint multidirectionnel 10m',sets:'6×10m',iso:false}]},{group:'Core',exercises:[{name:'Copenhagen plank',sets:'3×max',iso:true},{name:'Toes to bar',sets:'3×10',iso:false}]}],
+        'Vendredi':[{group:'Mobilité',exercises:[{name:'Routine complète hanches + épaules',sets:'20 min',iso:false}]},{group:'Activation',exercises:[{name:'Quick feet',sets:'4×15s',iso:false},{name:'Mini sprints 10m',sets:'3×10m',iso:false}]}]
+      }},
+      'S8': {note:'<strong>Phase 2 · Semaine 4 — Décharge.</strong> Volume –20%, charges maintenues. Récupère, mesure ta détente, évalue tes scores.',days:{
+        'Lundi':[{group:'Principal',exercises:[{name:'Hip thrust barre',sets:'3×5 @85%',iso:false},{name:'Squat bulgare lesté',sets:'3×8/jambe',iso:false},{name:'Goblet squat lourd',sets:'3×8',iso:false}]},{group:'Tendon',exercises:[{name:'Nordic hamstring curl',sets:'3×max',iso:false},{name:'Split squat hold',sets:'2×30s/jambe',iso:true}]}],
+        'Mardi':[{group:'Plyo réduit',exercises:[{name:'Box jumps hauts',sets:'3×4',iso:false},{name:'Broad jumps',sets:'3×4',iso:false},{name:'Sprints 20m',sets:'5×20m',iso:false}]}],
+        'Mercredi':[{group:'Calisthenics',exercises:[{name:'Pull-ups strictes',sets:'4×4–5',iso:false},{name:'Pull-ups explosives',sets:'3×3',iso:false},{name:'Dips lestés',sets:'3×max',iso:false},{name:'Front lever',sets:'3×max',iso:true},{name:'Dragon flag',sets:'2×6',iso:false}]},{group:'Force',exercises:[{name:'Bench press explosif',sets:'3×3 @75%',iso:false}]}],
+        'Jeudi':[{group:'Latéralité réduit',exercises:[{name:'Skater bounds',sets:'3×8',iso:false},{name:'Quick feet',sets:'3×15s',iso:false},{name:'Sprint multidirectionnel',sets:'4×10m',iso:false}]},{group:'Core',exercises:[{name:'Copenhagen plank',sets:'2×max',iso:true},{name:'Hollow rocks',sets:'2×20',iso:false}]}],
+        'Vendredi':[{group:'Mobilité + bilan',exercises:[{name:'Routine complète — toutes zones',sets:'25 min',iso:false},{name:'⭐ Mesurer détente verticale',sets:'TEST',iso:false,note:'Scotch sur le mur. Compare avec semaine 1.'}]}]
+      }}
+    }
+  }
+};
+
+// ════════════════════════════════════════════
+// DATA — MOBILITÉ
+// ════════════════════════════════════════════
+const MOBILITY = {
+  epaules: [
+    {name:'Cross-body stretch',icon:'🤸',duration:'30s/côté',desc:'Amène un bras devant ta poitrine, maintiens avec l\'autre main au niveau du coude. Épaule basse, pas de compensation du tronc. Sens le deltoïde postérieur s\'ouvrir.',target:'Deltoïde postérieur · Capsule postérieure',secs:30,sides:2},
+    {name:'Chest opener sur foam roller',icon:'🫀',duration:'45s',desc:'Allonge-toi sur le foam roller dans le sens de la colonne, bras en croix. Laisse la gravité ouvrir ta poitrine. Respire profondément — expire en t\'ouvrant plus.',target:'Pectoraux · Avant des épaules',secs:45,sides:1},
+    {name:'Wall slide',icon:'🧱',duration:'2×10 reps',desc:'Dos contre le mur, bras à 90° plaqués au mur. Fais monter les bras vers le haut en gardant contact coudes et poignets. Lent et contrôlé. Si t\'arrives pas à 180° sans décoller — c\'est ton niveau de départ.',target:'Rotateurs externes · Trapèze inférieur',secs:0,sides:0,reps:true},
+    {name:'Sleeper stretch',icon:'😴',duration:'45s/côté',desc:'Allongé sur le côté, bras à 90°. Avec l\'autre main, pousse doucement le poignet vers le sol. Ressens la rotation interne de l\'épaule s\'étirer. Pas de douleur aiguë.',target:'Rotateurs externes · Capsule postérieure',secs:45,sides:2},
+    {name:'Band pull-apart',icon:'↔️',duration:'3×15 reps',desc:'Bras tendus devant toi, élastique tenu à largeur d\'épaules. Écarte les bras en gardant coudes tendus jusqu\'à ce que l\'élastique touche ta poitrine. Contrôlé sur le retour.',target:'Rhomboïdes · Trapèze moyen · Rotateurs externes',secs:0,sides:0,reps:true},
+    {name:'Rotation thoracique (quadrupédie)',icon:'🔄',duration:'2×8/côté',desc:'À 4 pattes, main derrière la tête. Ouvre le coude vers le plafond en faisant pivoter le thorax. Bassin fixe — seulement le haut du dos tourne. Clé pour tes épaules ET ta frappe au soccer.',target:'Thoracique · Mobilité globale épaules',secs:0,sides:0,reps:true}
+  ],
+  hanches: [
+    {name:'90/90 switch actif',icon:'🦋',duration:'2×8/côté',desc:'Assis au sol, une jambe devant à 90°, une derrière à 90°. Bascule d\'un côté à l\'autre en gardant le dos droit. Actif = tu contrôles le mouvement, tu tombes pas d\'un côté.',target:'Rotateurs internes + externes · Capsule hanche',secs:0,sides:0,reps:true},
+    {name:'Hip airscrew',icon:'🌀',duration:'2×6/côté',desc:'À partir du 90/90, lève le genou avant vers le plafond en maintenant le pied fixe, puis amène-le vers l\'extérieur. Cercle complet de la hanche. Lent, contrôlé, amplitude maximale.',target:'Rotateurs de hanche · Mobilité articulaire complète',secs:0,sides:0,reps:true},
+    {name:'Pigeon actif',icon:'🕊️',duration:'45s/côté',desc:'Jambe avant à 90° devant, jambe arrière allongée. Au lieu de t\'affaisser, engage activement les muscles pour maintenir la position. Penche le tronc en avant pour intensifier. Direct sur ta flexibilité de frappe.',target:'Piriforme · Fessier profond · Rotateurs externes',secs:45,sides:2},
+    {name:'Cossack squat profond',icon:'🥋',duration:'2×8/côté',desc:'Pieds larges. Descends sur un côté en allongeant l\'autre jambe au sol. Pied de la jambe allongée — talon au sol si possible, sinon pied à plat. Talons fixes. C\'est le meilleur exercice pour tes hanches ET tes chevilles ensemble.',target:'Adducteurs · Hanches · Chevilles',secs:0,sides:0,reps:true},
+    {name:'Fentes profondes avec rotation',icon:'🌪️',duration:'2×6/côté',desc:'En position de fente basse, amène la main côté jambe avant vers le ciel en ouvrant le thorax. Tiens 2 secondes. Reviens. Alterne. Combine mobilité hanche + thoracique.',target:'Hip flexor · Thoracique · Hanche globale',secs:0,sides:0,reps:true},
+    {name:'Hip CARs (Controlled Articular Rotations)',icon:'⭕',duration:'2×5/côté',desc:'Debout, genou à 90° levé. Fais le plus grand cercle possible avec ta hanche — en avant, sur le côté, en arrière, referme. Lentissime. C\'est le mouvement de proprioception articulaire le plus efficace qui existe.',target:'Capsule de hanche · Contrôle articulaire complet',secs:0,sides:0,reps:true}
+  ],
+  chevilles: [
+    {name:'Banded dorsiflexion',icon:'🦶',duration:'2×10/côté',desc:'Élastique autour de la cheville, fixé en avant. Genou en avant sur le pied fixe. Pousse le genou le plus loin possible au-dessus du pied sans lever le talon. L\'élastique tire l\'articulation vers l\'avant, libérant l\'espace articulaire.',target:'Dorsiflexion · Articulation tibio-talienne',secs:0,sides:0,reps:true},
+    {name:'Wall ankle drill',icon:'🧱',duration:'2×10/côté',desc:'Face au mur, orteils à 10 cm. Pousse le genou pour toucher le mur sans lever le talon. Quand tu touches facilement → recule de 2 cm. Mesure ta progression en cm.',target:'Cheville · Gastrocnémien · Soléaire',secs:0,sides:0,reps:true},
+    {name:'Soleus stretch',icon:'🦵',duration:'40s/côté',desc:'Fente basse, genou avant très fléchi. Pousse le genou en avant au-dessus du pied. Contrairement au gastro stretch, le genou doit être plié pour isoler le soléaire. Ce muscle est souvent oublié mais clé pour la détente.',target:'Soléaire · Tendon d\'Achille profond',secs:40,sides:2},
+    {name:'Ankle CARs',icon:'⭕',duration:'2×5/côté',desc:'Assis, jambe tendue. Fais le plus grand cercle possible avec ton pied — extension maximale, dorsiflexion max, inversion, éversion. Lent. Sens tous les coins de l\'articulation.',target:'Mobilité articulaire complète · Proprioception',secs:0,sides:0,reps:true},
+    {name:'Toe raises progressifs',icon:'👆',duration:'3×15',desc:'Debout, lève les orteils et l\'avant-pied vers le haut le plus possible. Tiens 1 seconde en haut. Améliore la dorsiflexion active — directement lié à ta détente.',target:'Tibial antérieur · Dorsiflexion active',secs:0,sides:0,reps:true}
+  ],
+  ischio: [
+    {name:'Romanian Deadlift stretch',icon:'🏋️',duration:'45s',desc:'Debout, dos droit, penche le buste en avant en gardant les jambes tendues ou très légèrement fléchies. Sens la tension dans les ischio. Pas de dos rond — si tu ronds, arrête là. Tiens la position basse.',target:'Ischio-jambiers longs · Semitendineux',secs:45,sides:1},
+    {name:'Supine hamstring stretch',icon:'🛏️',duration:'45s/côté',desc:'Allongé sur le dos, amène une jambe vers toi avec les deux mains derrière la cuisse. Genou progressivement vers la jambe tendue. Plus tu peux tendre le genou, mieux c\'est. L\'autre jambe reste au sol.',target:'Ischio-jambiers · Nerf sciatique',secs:45,sides:2},
+    {name:'Nordic négatif lent (étirement actif)',icon:'🧎',duration:'3×5 reps',desc:'À genoux, pieds fixés. Descends le plus lentement possible en te retenant avec les ischio. Quand tu craques, pose les mains. Cet exercice est à la fois étirement et renforcement — le meilleur pour les ischio.',target:'Ischio-jambiers excentrique · Tendon proximal',secs:0,sides:0,reps:true},
+    {name:'Seated forward fold actif',icon:'🧘',duration:'45s',desc:'Assis, jambes tendues. Pousse activement les talons vers l\'avant, flex des pieds. Amène le buste vers les cuisses en gardant le dos droit au maximum. Respire et relâche à chaque expiration.',target:'Ischio-jambiers · Fascia thoraco-lombaire',secs:45,sides:1},
+    {name:'Hamstring floss',icon:'〰️',duration:'2×10/côté',desc:'Allongé sur le dos, genou à 90° ramené vers toi. Tends et plie la jambe lentement 10 fois — glissement neural. Particulièrement utile si t\'as des douleurs diffuses à l\'arrière de la cuisse.',target:'Nerf sciatique · Mobilité neurale',secs:0,sides:0,reps:true}
+  ],
+  routine: [
+    {name:'🕐 Routine complète · 20–25 min',icon:'⏱️',duration:'20–25 min',desc:'Enchaîne dans cet ordre optimal : 1) Thoracique foam roller 2 min → 2) Rotation thoracique 2×8/côté → 3) 90/90 switch + hip airscrew 2×6 → 4) Pigeon actif 45s/côté → 5) Banded dorsiflexion 2×10 → 6) Cossack squat 2×8 → 7) Sleeper stretch 45s/côté → 8) Wall slide 2×10 → 9) Hip CARs 2×5 → 10) Hamstring stretch 45s. Fait 3×/semaine. Évalue ton score après.',target:'Épaules · Hanches · Chevilles · Ischio · Thoracique',secs:0,sides:0,reps:true}
+  ]
+};
+
+// ════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════
+let state = {
+  phase: 1,
+  currentWeek: 'S1',
+  currentDay: 'Lundi',
+  loggedExercises: {}, // key: phase-week-day-exname
+  completedDays: {}, // key: phase-week-day => date string
+  sessionLogs: [], // array of {date, day, week, phase, exercises:[{name,kg,reps,note}]}
+  mobilityScores: {epaules:null, hanches:null, chevilles:null, ischio:null},
+  mobilityHistory: [], // [{date, zone, score}]
+  detente: [], // [{date, cm}]
+  currentLogKey: null,
+  currentScoreZone: null,
+  selectedScore: null,
+  timerInterval: null,
+  timerSeconds: 0,
+  timerTotal: 0,
+  timerPaused: false,
+  timerName: '',
+  mobZone: 'epaules'
+};
+
+function save(){localStorage.setItem('beks_training',JSON.stringify(state));}
+function load(){
+  const d=localStorage.getItem('beks_training');
+  if(d){
+    const parsed=JSON.parse(d);
+    state={...state,...parsed};
+  }
+}
+
+// ════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════
+function goPage(name, btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(name==='home') renderDashboard();
+  if(name==='workout') renderWorkout();
+  if(name==='history') renderHistory();
+  if(name==='progress') renderProgress();
+  if(name==='mobility') renderMobility();
+  if(name==='export'){document.getElementById('export-output').style.display='none';}
+}
+
+function goToWorkout(){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-workout').classList.add('active');
+  document.querySelectorAll('.nav-btn')[1].classList.add('active');
+  renderWorkout();
+}
+
+// ════════════════════════════════════════════
+// DASHBOARD
+// ════════════════════════════════════════════
+function renderDashboard(){
+  // Sessions this week
+  const weekKey = state.currentWeek;
+  const sessionsThisWeek = DAYS.filter(d=>{
+    const k=`${state.phase}-${weekKey}-${d}`;
+    return state.completedDays[k];
+  }).length;
+  document.getElementById('dash-sessions').textContent=sessionsThisWeek;
+  document.getElementById('dash-week').textContent=state.currentWeek;
+
+  // Detente
+  if(state.detente && state.detente.length>0){
+    document.getElementById('dash-detente').textContent=state.detente[state.detente.length-1].cm;
+  }
+
+  // Streak
+  document.getElementById('dash-streak').textContent=calcStreak();
+
+  // Today
+  const days=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const todayName=days[new Date().getDay()];
+  const todayTitle=document.getElementById('today-title');
+  const todayDesc=document.getElementById('today-desc');
+  if(DAYS.includes(todayName)){
+    todayTitle.textContent=todayName+' — '+DAY_TITLES[todayName];
+    todayDesc.textContent='Semaine '+state.currentWeek+' · Phase '+state.phase;
+  } else {
+    todayTitle.textContent=todayName==='Samedi'?'Samedi — Match Volleyball':'Dimanche — Match Soccer';
+    todayDesc.textContent='Journée de compétition 🏆';
+  }
+
+  // Mobility scores
+  ['epaules','hanches','chevilles','ischio'].forEach(z=>{
+    const score=state.mobilityScores[z];
+    const el=document.getElementById('dash-score-'+z);
+    const fill=document.getElementById('dash-fill-'+z);
+    if(score){
+      el.textContent=score+'/5';
+      fill.style.width=(score/5*100)+'%';
+    }
+  });
+
+  // Recent sessions
+  const container=document.getElementById('recent-sessions');
+  if(state.sessionLogs && state.sessionLogs.length>0){
+    const recent=state.sessionLogs.slice(-4).reverse();
+    container.innerHTML=recent.map(s=>`
+      <div class="session-row">
+        <div class="session-day">${s.day.substring(0,2)}</div>
+        <div class="session-info">
+          <div class="session-name">${s.day} — ${DAY_TITLES[s.day]||s.day}</div>
+          <div class="session-meta">${s.date} · Semaine ${s.week} · ${s.exercises.length} exo loggués</div>
+        </div>
+        <div class="session-check">✅</div>
+      </div>`).join('');
+  }
+}
+
+function calcStreak(){
+  // Simple: count completed weeks
+  let streak=0;
+  const allWeeks=['S1','S2','S3','S4','S5','S6','S7','S8'];
+  for(let w of allWeeks){
+    const phase=allWeeks.indexOf(w)<4?1:2;
+    const completed=DAYS.filter(d=>state.completedDays[`${phase}-${w}-${d}`]).length;
+    if(completed>=3) streak++;
+    else break;
+  }
+  return streak;
+}
+
+// ════════════════════════════════════════════
+// WORKOUT
+// ════════════════════════════════════════════
+function setPhase(p){
+  state.phase=p;
+  document.getElementById('chip-p1').className='phase-chip'+(p===1?' active-p1':'');
+  document.getElementById('chip-p2').className='phase-chip'+(p===2?' active-p2':'');
+  state.currentWeek=p===1?'S1':'S5';
+  state.currentDay='Lundi';
+  save();
+  renderWorkout();
+}
+
+function renderWorkout(){
+  const phase=PROGRAM[state.phase];
+  const weeks=Object.keys(phase.weeks);
+
+  // Week pills
+  const weekRow=document.getElementById('week-row');
+  weekRow.innerHTML=weeks.map(w=>`
+    <div class="week-chip ${w===state.currentWeek?'active':''}" onclick="selectWeek('${w}')">${w}</div>`).join('');
+
+  // Day chips
+  const dayRow=document.getElementById('day-row');
+  dayRow.innerHTML=DAYS.map(d=>{
+    const done=state.completedDays[`${state.phase}-${state.currentWeek}-${d}`];
+    return `<div class="day-chip ${d===state.currentDay?'active':''} ${done?'done':''}" onclick="selectDay('${d}')">${d.substring(0,2)}</div>`;
+  }).join('');
+
+  // Week note
+  const weekData=phase.weeks[state.currentWeek];
+  document.getElementById('week-note').innerHTML=weekData?weekData.note:'';
+
+  // Exercises
+  renderExercises();
+}
+
+function selectWeek(w){
+  state.currentWeek=w;
+  state.currentDay='Lundi';
+  save();
+  renderWorkout();
+}
+
+function selectDay(d){
+  state.currentDay=d;
+  save();
+  renderWorkout();
+  // Scroll to exercises
+  setTimeout(()=>{
+    document.getElementById('exercises-container').scrollIntoView({behavior:'smooth'});
+  },100);
+}
+
+function renderExercises(){
+  const weekData=PROGRAM[state.phase].weeks[state.currentWeek];
+  if(!weekData){document.getElementById('exercises-container').innerHTML='';return;}
+  const dayData=weekData.days[state.currentDay];
+  if(!dayData){
+    document.getElementById('exercises-container').innerHTML=`
+      <div class="card"><div class="card-body"><div class="empty-state">
+        <div class="empty-icon">${state.currentDay==='Samedi'?'🏐':'⚽'}</div>
+        <div class="empty-text">Journée de compétition.<br>Concentre-toi sur ton match !</div>
+      </div></div></div>`;
+    return;
+  }
+
+  let html='';
+  dayData.forEach(group=>{
+    html+=`<div class="card" style="margin-bottom:12px;">`;
+    html+=`<div class="group-header">${group.group}</div>`;
+    group.exercises.forEach(ex=>{
+      const key=`${state.phase}-${state.currentWeek}-${state.currentDay}-${ex.name}`;
+      const logged=state.loggedExercises[key];
+      const loggedClass=logged?'logged':'';
+      const loggedText=logged?`${logged.kg?logged.kg+'kg · ':''}${logged.reps}`:'LOG';
+      const timerIcon=ex.iso?' ⏱':'';
+      html+=`<div class="ex-row">
+        <div>
+          <div class="ex-name">${ex.name}${timerIcon}</div>
+          <div class="ex-sets">${ex.sets}</div>
+          ${ex.note?`<div class="ex-note">ℹ️ ${ex.note}</div>`:''}
+          ${logged&&logged.note?`<div class="ex-note">💬 ${logged.note}</div>`:''}
+        </div>
+        <button class="log-btn ${loggedClass}" onclick="openLog('${key}','${ex.name.replace(/'/g,"\\'")}','${ex.sets}',${ex.iso?30:0})">${loggedText}</button>
+      </div>`;
+    });
+    html+=`</div>`;
+  });
+
+  document.getElementById('exercises-container').innerHTML=html;
+
+  // Update finish button
+  const isDone=state.completedDays[`${state.phase}-${state.currentWeek}-${state.currentDay}`];
+  const btn=document.getElementById('finish-btn');
+  btn.textContent=isDone?'✓ SÉANCE COMPLÉTÉE':'✓ MARQUER SÉANCE COMPLÈTE';
+  btn.style.background=isDone?'var(--green)':'var(--accent)';
+}
+
+function finishDay(){
+  const key=`${state.phase}-${state.currentWeek}-${state.currentDay}`;
+  const already=state.completedDays[key];
+  if(already){return;}
+
+  state.completedDays[key]=new Date().toLocaleDateString('fr-CA');
+
+  // Save session log
+  const weekData=PROGRAM[state.phase].weeks[state.currentWeek];
+  const dayData=weekData?weekData.days[state.currentDay]:null;
+  const loggedExs=[];
+  if(dayData){
+    dayData.forEach(g=>g.exercises.forEach(ex=>{
+      const k=`${state.phase}-${state.currentWeek}-${state.currentDay}-${ex.name}`;
+      const l=state.loggedExercises[k];
+      if(l) loggedExs.push({name:ex.name,...l});
+    }));
+  }
+  state.sessionLogs.push({
+    date:new Date().toLocaleDateString('fr-CA'),
+    day:state.currentDay,
+    week:state.currentWeek,
+    phase:state.phase,
+    exercises:loggedExs
+  });
+
+  // Update PRs
+  updatePRs(loggedExs);
+
+  save();
+  renderWorkout();
+
+  // Feedback
+  const btn=document.getElementById('finish-btn');
+  btn.textContent='🔥 SÉANCE VALIDÉE !';
+  btn.style.background='var(--green)';
+}
+
+function updatePRs(exercises){
+  if(!state.prs) state.prs={};
+  exercises.forEach(ex=>{
+    if(ex.kg && parseFloat(ex.kg)>0){
+      const key=ex.name;
+      if(!state.prs[key] || parseFloat(ex.kg)>parseFloat(state.prs[key].kg)){
+        state.prs[key]={kg:ex.kg,reps:ex.reps,date:new Date().toLocaleDateString('fr-CA')};
+      }
+    }
+  });
+}
+
+// ════════════════════════════════════════════
+// LOG MODAL
+// ════════════════════════════════════════════
+function openLog(key, name, sets, isoDuration){
+  state.currentLogKey=key;
+  document.getElementById('modal-ex-name').textContent=name;
+  document.getElementById('modal-ex-sets').textContent=sets;
+  const existing=state.loggedExercises[key];
+  document.getElementById('modal-kg').value=existing?existing.kg:'';
+  document.getElementById('modal-reps').value=existing?existing.reps:'';
+  document.getElementById('modal-note').value=existing?existing.note:'';
+  document.getElementById('log-modal').classList.add('open');
+  if(isoDuration>0){
+    // Start timer automatically after save
+    state.pendingTimerDuration=isoDuration;
+    state.pendingTimerName=name;
+  } else {
+    state.pendingTimerDuration=0;
+  }
+}
+
+function closeLogModal(e){
+  if(!e || e.target===document.getElementById('log-modal')){
+    document.getElementById('log-modal').classList.remove('open');
+  }
+}
+
+function saveLog(){
+  const kg=document.getElementById('modal-kg').value;
+  const reps=document.getElementById('modal-reps').value;
+  const note=document.getElementById('modal-note').value;
+  if(!reps && !kg){closeLogModal();return;}
+  state.loggedExercises[state.currentLogKey]={kg,reps,note};
+  save();
+  document.getElementById('log-modal').classList.remove('open');
+  renderExercises();
+  if(state.pendingTimerDuration>0){
+    setTimeout(()=>startTimer(state.pendingTimerName, state.pendingTimerDuration),300);
+  }
+}
+
+// ════════════════════════════════════════════
+// TIMER
+// ════════════════════════════════════════════
+function startTimer(name, seconds){
+  state.timerSeconds=seconds;
+  state.timerTotal=seconds;
+  state.timerPaused=false;
+  state.timerName=name;
+  document.getElementById('timer-ex-name').textContent=name;
+  document.getElementById('timer-side').textContent='';
+  updateTimerDisplay();
+  document.getElementById('timer-overlay').classList.add('open');
+  clearInterval(state.timerInterval);
+  state.timerInterval=setInterval(()=>{
+    if(!state.timerPaused){
+      state.timerSeconds--;
+      updateTimerDisplay();
+      if(state.timerSeconds<=0){
+        clearInterval(state.timerInterval);
+        document.getElementById('timer-display').textContent='GO!';
+        document.getElementById('timer-display').classList.add('urgent');
+        navigator.vibrate&&navigator.vibrate([200,100,200]);
+        setTimeout(()=>{
+          document.getElementById('timer-overlay').classList.remove('open');
+          document.getElementById('timer-display').classList.remove('urgent');
+        },2000);
+      }
+    }
+  },1000);
+}
+
+function updateTimerDisplay(){
+  const s=state.timerSeconds;
+  document.getElementById('timer-display').textContent=s<10?'0'+s:s;
+  const pct=Math.max(0,(s/state.timerTotal)*100);
+  document.getElementById('timer-prog-fill').style.width=pct+'%';
+  if(s<=5) document.getElementById('timer-display').classList.add('urgent');
+  else document.getElementById('timer-display').classList.remove('urgent');
+}
+
+function stopTimer(){
+  clearInterval(state.timerInterval);
+  document.getElementById('timer-overlay').classList.remove('open');
+}
+
+function togglePause(){
+  state.timerPaused=!state.timerPaused;
+  document.getElementById('timer-pause-btn').textContent=state.timerPaused?'REPRENDRE':'PAUSE';
+}
+
+// ════════════════════════════════════════════
+// HISTORY
+// ════════════════════════════════════════════
+let histFilter='all';
+function filterHist(f, el){
+  histFilter=f;
+  document.querySelectorAll('.filt-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderHistory();
+}
+
+function renderHistory(){
+  const list=document.getElementById('history-list');
+  if(!state.sessionLogs || state.sessionLogs.length===0){
+    list.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">Aucune séance enregistrée.<br>Complète ta première séance !</div></div>`;
+    return;
+  }
+  const filtered=histFilter==='all'?state.sessionLogs:state.sessionLogs.filter(s=>s.day===histFilter);
+  if(filtered.length===0){
+    list.innerHTML=`<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-text">Aucune séance pour ce jour.</div></div>`;
+    return;
+  }
+  list.innerHTML=[...filtered].reverse().map(s=>`
+    <div class="hist-entry">
+      <div class="hist-head">
+        <div>
+          <div class="hist-day-name">${s.day} — S${s.week}</div>
+          <div style="font-size:10px;letter-spacing:1px;color:var(--muted2)">Phase ${s.phase}</div>
+        </div>
+        <div class="hist-date">${s.date}</div>
+      </div>
+      <div class="hist-body">
+        ${s.exercises.length===0?'<div style="font-size:12px;color:var(--muted)">Séance complétée — aucun exercice loggué</div>':
+        s.exercises.map(e=>`
+          <div class="hist-ex">
+            <div class="hist-ex-name">${e.name}</div>
+            <div class="hist-ex-val">${e.kg?e.kg+'kg · ':''}${e.reps}</div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════
+// PROGRESS
+// ════════════════════════════════════════════
+function renderProgress(){
+  // Detente
+  if(state.detente && state.detente.length>0){
+    const latest=state.detente[state.detente.length-1].cm;
+    const first=state.detente[0].cm;
+    document.getElementById('prog-detente-val').textContent=latest;
+    const gain=latest-first;
+    document.getElementById('prog-detente-gain').textContent=gain>0?`+${gain} cm vs départ`:gain===0?'Même qu\'au départ':'';
+  }
+
+  // Detente history
+  const dlist=document.getElementById('detente-history-list');
+  if(state.detente && state.detente.length>0){
+    dlist.innerHTML=state.detente.map(d=>`
+      <div class="detente-row">
+        <div class="detente-row-label">${d.date}</div>
+        <div class="detente-row-val">${d.cm} cm</div>
+      </div>`).join('');
+  } else {
+    dlist.innerHTML='<div style="font-size:12px;color:var(--muted);text-align:center;padding:10px 0">Aucune mesure encore. Ajoute ta première !</div>';
+  }
+
+  // Mobility scores
+  ['epaules','hanches','chevilles','ischio'].forEach(z=>{
+    const score=state.mobilityScores[z];
+    const el=document.getElementById('pscore-'+z);
+    const lab=document.getElementById('pscorelab-'+z);
+    const fill=document.getElementById('pfill-'+z);
+    if(score){
+      el.textContent=score+'/5';
+      el.className='mob-score-val '+(score<=2?'score-low':score<=3?'score-mid':'score-high');
+      lab.textContent=score<=2?'Raide':score<=3?'Moyen':score<=4?'Bien':'Excellent';
+      fill.style.width=(score/5*100)+'%';
+      fill.style.background=score<=2?'var(--red)':score<=3?'var(--orange)':'var(--green)';
+    }
+  });
+
+  // PRs
+  const prList=document.getElementById('pr-list');
+  if(state.prs && Object.keys(state.prs).length>0){
+    prList.innerHTML=Object.entries(state.prs).map(([name,pr])=>`
+      <div class="pr-item">
+        <div>
+          <div class="pr-name">${name}</div>
+          <div class="pr-date">${pr.date}</div>
+        </div>
+        <div>
+          <div class="pr-val">${pr.kg}kg</div>
+          <div style="font-size:11px;color:var(--muted2);text-align:right">${pr.reps} reps</div>
+        </div>
+      </div>`).join('');
+  } else {
+    prList.innerHTML=`<div class="empty-state" style="padding:20px 0"><div class="empty-icon">🏆</div><div class="empty-text">Tes records apparaîtront ici<br>quand tu loggues tes séances.</div></div>`;
+  }
+}
+
+// ════════════════════════════════════════════
+// DETENTE MODAL
+// ════════════════════════════════════════════
+function openDetenteModal(){
+  document.getElementById('det-input').value='';
+  document.getElementById('det-modal').classList.add('open');
+}
+function closeDetModal(e){
+  if(e.target===document.getElementById('det-modal')) document.getElementById('det-modal').classList.remove('open');
+}
+function saveDetente(){
+  const val=document.getElementById('det-input').value;
+  if(!val) return;
+  if(!state.detente) state.detente=[];
+  state.detente.push({date:new Date().toLocaleDateString('fr-CA'),cm:parseInt(val)});
+  save();
+  document.getElementById('det-modal').classList.remove('open');
+  renderProgress();
+  renderDashboard();
+}
+
+// ════════════════════════════════════════════
+// MOBILITY
+// ════════════════════════════════════════════
+function setMobZone(zone, el){
+  state.mobZone=zone;
+  document.querySelectorAll('.mob-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderMobility();
+}
+
+function renderMobility(){
+  const exercises=MOBILITY[state.mobZone]||[];
+  const container=document.getElementById('mob-content');
+  container.innerHTML=exercises.map((ex,i)=>`
+    <div class="mob-exercise">
+      <div class="mob-ex-header" onclick="toggleMobEx(${i})">
+        <div class="mob-ex-left">
+          <div class="mob-ex-icon">${ex.icon}</div>
+          <div>
+            <div class="mob-ex-name">${ex.name}</div>
+            <div class="mob-ex-duration">${ex.duration}</div>
+          </div>
+        </div>
+        <div class="mob-ex-arrow" id="arrow-${i}">▼</div>
+      </div>
+      <div class="mob-ex-body" id="mob-body-${i}">
+        <div class="mob-ex-target">${ex.target}</div>
+        <div class="mob-ex-desc">${ex.desc}</div>
+        ${ex.secs>0?`<button class="timer-btn" onclick="startTimer('${ex.name}',${ex.secs})">⏱ LANCER TIMER · ${ex.secs}s${ex.sides>1?' / côté':''}</button>`:''}
+        ${ex.reps?`<button class="timer-btn" onclick="this.style.background='rgba(78,222,128,.1)';this.textContent='✓ FAIT';this.style.color='var(--green)'">✓ MARQUER FAIT</button>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function toggleMobEx(i){
+  const body=document.getElementById('mob-body-'+i);
+  const arrow=document.getElementById('arrow-'+i);
+  body.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+
+// ════════════════════════════════════════════
+// SCORE MODAL
+// ════════════════════════════════════════════
+const zoneNames={epaules:'Épaules',hanches:'Hanches',chevilles:'Chevilles',ischio:'Ischio-jambiers'};
+function openScoreModal(zone){
+  state.currentScoreZone=zone;
+  state.selectedScore=null;
+  document.getElementById('score-modal-title').textContent='Évaluer — '+zoneNames[zone];
+  document.querySelectorAll('.score-opt').forEach(o=>o.classList.remove('sel'));
+  document.getElementById('score-modal').classList.add('open');
+}
+function closeScoreModal(e){
+  if(e.target===document.getElementById('score-modal')) document.getElementById('score-modal').classList.remove('open');
+}
+function selectScore(n){
+  state.selectedScore=n;
+  document.querySelectorAll('.score-opt').forEach((o,i)=>o.classList.toggle('sel',i+1===n));
+}
+function saveScore(){
+  if(!state.selectedScore) return;
+  state.mobilityScores[state.currentScoreZone]=state.selectedScore;
+  if(!state.mobilityHistory) state.mobilityHistory=[];
+  state.mobilityHistory.push({date:new Date().toLocaleDateString('fr-CA'),zone:state.currentScoreZone,score:state.selectedScore});
+  save();
+  document.getElementById('score-modal').classList.remove('open');
+  renderDashboard();
+  renderProgress();
+}
+
+// ════════════════════════════════════════════
+// EXPORT
+// ════════════════════════════════════════════
+function generateExport(){
+  const now = new Date().toLocaleDateString('fr-CA');
+  const totalSessions = state.sessionLogs ? state.sessionLogs.length : 0;
+  const streak = calcStreak();
+
+  // Détente
+  let detenteSection = 'Aucune mesure encore.';
+  if(state.detente && state.detente.length > 0){
+    const first = state.detente[0];
+    const last = state.detente[state.detente.length-1];
+    const gain = last.cm - first.cm;
+    detenteSection = `Départ : ${first.cm} cm (${first.date})\nActuel : ${last.cm} cm (${last.date})\nProgression : ${gain >= 0 ? '+' : ''}${gain} cm`;
+    if(state.detente.length > 2){
+      detenteSection += '\nHistorique : ' + state.detente.map(d=>`${d.cm}cm (${d.date})`).join(' → ');
+    }
+  }
+
+  // Mobilité scores
+  const mobSection = ['epaules','hanches','chevilles','ischio'].map(z=>{
+    const s = state.mobilityScores[z];
+    const name = zoneNames[z];
+    if(!s) return `${name} : non évalué`;
+    const label = s<=2?'Raide':s<=3?'Moyen':s<=4?'Bien':'Excellent';
+    return `${name} : ${s}/5 (${label})`;
+  }).join('\n');
+
+  // PRs
+  let prSection = 'Aucun record encore.';
+  if(state.prs && Object.keys(state.prs).length > 0){
+    prSection = Object.entries(state.prs).map(([name,pr])=>`${name} : ${pr.kg}kg × ${pr.reps} (${pr.date})`).join('\n');
+  }
+
+  // Dernières séances
+  let sessionsSection = 'Aucune séance loggée.';
+  if(state.sessionLogs && state.sessionLogs.length > 0){
+    const recent = state.sessionLogs.slice(-8).reverse();
+    sessionsSection = recent.map(s=>{
+      const exLine = s.exercises.length > 0
+        ? s.exercises.map(e=>`  - ${e.name}${e.kg?' : '+e.kg+'kg × '+e.reps:e.reps?' : '+e.reps:''}`).join('\n')
+        : '  (aucun exercice loggué)';
+      return `${s.date} · ${s.day} S${s.week} Phase ${s.phase}\n${exLine}`;
+    }).join('\n\n');
+  }
+
+  const report =
+`══════════════════════════════
+RAPPORT TRAINING — BEKS
+Généré le : ${now}
+══════════════════════════════
+
+PROFIL ATHLÉTIQUE
+• Taille : 1m89 · Build : lean
+• Sports : Soccer (attaquant) + Volleyball
+• Objectif : Détente max, accélération explosive, force relative, mobilité
+• Phase actuelle : Phase ${state.phase} · Semaine ${state.currentWeek}
+
+VOLUME D'ENTRAÎNEMENT
+• Total séances complétées : ${totalSessions}
+• Semaines complètes (3+ séances) : ${streak}
+• Séances cette semaine : ${['S1','S2','S3','S4','S5','S6','S7','S8'].includes(state.currentWeek) ? ['Lundi','Mardi','Mercredi','Jeudi','Vendredi'].filter(d=>state.completedDays[`${state.phase}-${state.currentWeek}-${d}`]).length : 0}/5
+
+DÉTENTE VERTICALE
+${detenteSection}
+
+MOBILITÉ — SCORES PAR ZONE (sur 5)
+${mobSection}
+
+RECORDS PERSONNELS (charges)
+${prSection}
+
+8 DERNIÈRES SÉANCES
+${sessionsSection}
+
+══════════════════════════════
+FIN DU RAPPORT
+══════════════════════════════`;
+
+  document.getElementById('export-text').value = report;
+  document.getElementById('export-output').style.display = 'block';
+  document.getElementById('copy-btn').textContent = '📋 COPIER';
+  document.getElementById('copy-btn').style.color = 'var(--accent)';
+  setTimeout(()=>{
+    document.getElementById('export-output').scrollIntoView({behavior:'smooth'});
+  },100);
+}
+
+function copyExport(){
+  const text = document.getElementById('export-text').value;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(()=>{
+      document.getElementById('copy-btn').textContent = '✅ COPIÉ !';
+      document.getElementById('copy-btn').style.color = 'var(--green)';
+    });
+  } else {
+    // fallback
+    const ta = document.getElementById('export-text');
+    ta.select();
+    document.execCommand('copy');
+    document.getElementById('copy-btn').textContent = '✅ COPIÉ !';
+    document.getElementById('copy-btn').style.color = 'var(--green)';
+  }
+}
+
+// ════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════
+load();
+renderDashboard();
+renderWorkout();
+renderMobility();
+</script>
+</body>
+</html>
